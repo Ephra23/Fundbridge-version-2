@@ -1527,6 +1527,7 @@ By creating an account you agree to our <span style="color:var(--p);cursor:point
 <div class="sb-link sb-sub" onclick="aSec('a-loans',this);filterLoans('settled',null)" style="padding-left:36px;font-size:12px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Settled Loans</div>
 <div class="sb-link sb-sub" onclick="aSec('a-loans',this);filterLoans('defaulted',null)" style="padding-left:36px;font-size:12px;color:#ef4444" id="sb-defaulted"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Defaulted Loans</div>
 <div class="sb-link sb-sub" onclick="aSec('a-loans',this);filterLoans('renewals',null)" style="padding-left:36px;font-size:12px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Renewals</div>
+<div class="sb-link" onclick="aSec('a-savings',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/><line x1="8" y1="12" x2="8.01" y2="12"/></svg> Savings</div>
 <div class="sb-link" onclick="aSec('a-repayments',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Repayments</div>
 <div class="sb-link" onclick="aSec('a-documents',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Documents</div>
 <div class="sb-link" onclick="aSec('a-expenses',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Expenses</div>
@@ -2259,6 +2260,110 @@ New Rollover
 <div class="tw"><table><thead><tr><th>Applicant</th><th>Business</th><th>Amount</th><th>Purpose</th><th>Applied</th><th>Status</th><th>Actions</th></tr></thead><tbody id="apps-tb"></tbody></table></div>
 </div>
 </div>
+
+<div id="a-savings" class="asec hidden">
+
+<!-- Header -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+<div>
+<div style="font-size:15px;font-weight:800">Savings Accounts</div>
+<div style="font-size:13px;color:var(--t3);margin-top:2px">Track deposits, withdrawals and member balances</div>
+</div>
+<div style="display:flex;gap:8px">
+<button class="btn btn-ghost btn-sm" onclick="savingsFilter('all',this)" id="sv-btn-all" style="background:var(--p);color:#fff">All Members</button>
+<button class="btn btn-ghost btn-sm" onclick="savingsFilter('active',this)" id="sv-btn-active">Active</button>
+<button class="btn btn-ghost btn-sm" onclick="savingsFilter('dormant',this)" id="sv-btn-dormant">Dormant</button>
+<button class="btn btn-ghost btn-sm" onclick="showAddSavingsMember()" style="background:#fff;border:1.5px solid var(--p);color:var(--p)">+ Add Member</button>
+<button class="btn btn-primary btn-sm" onclick="showSavingsDeposit()">+ Record Transaction</button>
+</div>
+</div>
+
+<!-- Summary Cards -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px">
+<div class="card" style="padding:18px">
+<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px">Total Savings Pool</div>
+<div style="font-size:26px;font-weight:800;color:var(--p);margin-top:6px" id="sv-total">UGX 0</div>
+<div style="font-size:12px;color:var(--t3);margin-top:4px">Across all members</div>
+</div>
+<div class="card" style="padding:18px">
+<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px">Total Deposits (Month)</div>
+<div style="font-size:26px;font-weight:800;color:var(--grn);margin-top:6px" id="sv-deposits">UGX 0</div>
+<div style="font-size:12px;color:var(--t3);margin-top:4px">This month</div>
+</div>
+<div class="card" style="padding:18px">
+<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px">Total Withdrawals (Month)</div>
+<div style="font-size:26px;font-weight:800;color:var(--red);margin-top:6px" id="sv-withdrawals">UGX 0</div>
+<div style="font-size:12px;color:var(--t3);margin-top:4px">This month</div>
+</div>
+<div class="card" style="padding:18px">
+<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px">Active Savers</div>
+<div style="font-size:26px;font-weight:800;color:var(--blue);margin-top:6px" id="sv-count">0</div>
+<div style="font-size:12px;color:var(--t3);margin-top:4px">Members saving</div>
+</div>
+</div>
+
+<!-- Member Savings Accounts Table -->
+<div class="card" style="padding:0;overflow:hidden;margin-bottom:20px">
+<div style="padding:14px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between">
+<span style="font-size:14px;font-weight:800">Member Savings Accounts</span>
+<input id="sv-search" oninput="savingsSearch(this.value)" style="padding:7px 12px;border:1px solid var(--bdr);border-radius:8px;font-size:13px;outline:none;width:220px" placeholder="Search member..."/>
+</div>
+<table style="width:100%;border-collapse:collapse;font-size:13px">
+<thead><tr style="background:var(--sur2)">
+<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Member</th>
+<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Account No.</th>
+<th style="padding:10px 16px;text-align:right;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Total Deposited</th>
+<th style="padding:10px 16px;text-align:right;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Total Withdrawn</th>
+<th style="padding:10px 16px;text-align:right;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Balance</th>
+<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Last Activity</th>
+<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Status</th>
+<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Action</th>
+</tr></thead>
+<tbody id="sv-accounts-tbody"></tbody>
+</table>
+</div>
+
+<!-- Passbook / Transaction History -->
+<div class="card" style="padding:0;overflow:hidden" id="sv-passbook-card">
+<div style="padding:14px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;background:var(--p)">
+<div>
+<div style="font-size:14px;font-weight:800;color:#fff" id="sv-passbook-name">Select a member to view passbook</div>
+<div style="font-size:12px;color:rgba(255,255,255,.8);margin-top:2px" id="sv-passbook-acct"></div>
+</div>
+<div style="display:flex;gap:8px">
+<button onclick="window.print()" style="background:rgba(255,255,255,.2);border:none;color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:7px;cursor:pointer">&#128424; Print Passbook</button>
+<button onclick="document.getElementById('sv-passbook-card').style.display='none'" style="background:rgba(255,255,255,.2);border:none;color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:7px;cursor:pointer">Close</button>
+</div>
+</div>
+
+<!-- Passbook table - matches the physical passbook layout from image -->
+<div style="padding:16px 20px">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+<div style="background:var(--p2);border-radius:8px;padding:12px"><div style="font-size:11px;color:var(--p);font-weight:700;text-transform:uppercase">Account Balance</div><div style="font-size:20px;font-weight:800;color:var(--p)" id="sv-pb-balance">UGX 0</div></div>
+<div style="background:#f0fdf4;border-radius:8px;padding:12px"><div style="font-size:11px;color:var(--grn);font-weight:700;text-transform:uppercase">Total Savings</div><div style="font-size:20px;font-weight:800;color:var(--grn)" id="sv-pb-saved">UGX 0</div></div>
+<div style="background:#fef2f2;border-radius:8px;padding:12px"><div style="font-size:11px;color:var(--red);font-weight:700;text-transform:uppercase">Total Withdrawn</div><div style="font-size:20px;font-weight:800;color:var(--red)" id="sv-pb-withdrawn">UGX 0</div></div>
+<div style="background:#eff6ff;border-radius:8px;padding:12px"><div style="font-size:11px;color:var(--blue);font-weight:700;text-transform:uppercase">Transactions</div><div style="font-size:20px;font-weight:800;color:var(--blue)" id="sv-pb-count">0</div></div>
+</div>
+</div>
+
+<table style="width:100%;border-collapse:collapse;font-size:13px" id="sv-passbook-table">
+<thead><tr style="background:var(--p)">
+<th style="padding:11px 16px;text-align:left;font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-transform:uppercase;border:1px solid rgba(255,255,255,.2)">Date</th>
+<th style="padding:11px 16px;text-align:left;font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-transform:uppercase;border:1px solid rgba(255,255,255,.2)">P #</th>
+<th style="padding:11px 16px;text-align:left;font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-transform:uppercase;border:1px solid rgba(255,255,255,.2)">Particulars</th>
+<th style="padding:11px 16px;text-align:right;font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-transform:uppercase;border:1px solid rgba(255,255,255,.2)">Savings (Deposit)</th>
+<th style="padding:11px 16px;text-align:right;font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-transform:uppercase;border:1px solid rgba(255,255,255,.2)">Withdrawal</th>
+<th style="padding:11px 16px;text-align:right;font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-transform:uppercase;border:1px solid rgba(255,255,255,.2)">Balance</th>
+<th style="padding:11px 16px;text-align:left;font-size:11px;font-weight:700;color:rgba(255,255,255,.9);text-transform:uppercase;border:1px solid rgba(255,255,255,.2)">Officer Sign</th>
+</tr></thead>
+<tbody id="sv-passbook-tbody">
+<tr><td colspan="7" style="padding:24px;text-align:center;color:var(--t3)">Select a member above to view their passbook</td></tr>
+</tbody>
+</table>
+</div>
+
+</div>
+<!-- ── end a-savings ── -->
 
 <div id="a-repayments" class="asec hidden">
 <div class="ph"><h2>Repayments</h2><p>Record and track all loan repayments.</p></div>
@@ -4665,7 +4770,7 @@ var saTitles={
 };
 function saSec(id,el){
   document.querySelectorAll('.sa-sec,.sasec').forEach(function(s){s.classList.add('hidden')});
-  var t=document.getElementById(id);if(t)t.classList.remove('hidden');if(id==='a-product-perf')buildProductPerformance();
+  var t=document.getElementById(id);if(t)t.classList.remove('hidden');if(id==='a-product-perf')buildProductPerformance();if(id==='a-savings')buildSavings();
   document.querySelectorAll('#sb-super .sb-link').forEach(function(l){l.classList.remove('active')});
   if(el)el.classList.add('active');
   var tt=document.getElementById('sa-title');if(tt)tt.textContent=saTitles[id]||'Super Admin';
@@ -4697,7 +4802,7 @@ function uSec(id,el){
   var tt=document.getElementById('u-title');if(tt)tt.textContent=uTitles[id]||'Dashboard';
 }
 
-var aTitleMap={'a-overview':'Dashboard','a-ind-clients':'Individual Clients','a-biz-clients':'Business Clients','a-add-client':'Add New Client','a-loans':'All Loans','a-applications':'Applications','a-repayments':'Repayments','a-loan-products':'Loan Products','a-expenses':'Expenses','a-sms':'Bulk SMSs','a-finances':'Finances','a-summaries':'Summaries','a-statements':'Statements','a-chart-accounts':'Chart of Accounts','a-ai-credit':'AI Credit Check','a-groups':'Groups','a-group-loans':'Group Loans','a-collection-sheets':'Collection Sheets','a-mobile-money':'Mobile Money','a-product-perf':'Product Performance','a-employees':'Employees','a-settings':'System Settings','a-imports':'Imports','a-new-loan':'New Loan','a-record-income':'Record Income','a-emails':'Emails','a-documents':'Documents','a-other-incomes':'Other Incomes','a-investors':'Investors'};
+var aTitleMap={'a-overview':'Dashboard','a-ind-clients':'Individual Clients','a-biz-clients':'Business Clients','a-add-client':'Add New Client','a-loans':'All Loans','a-applications':'Applications','a-repayments':'Repayments','a-savings':'Savings Accounts','a-loan-products':'Loan Products','a-expenses':'Expenses','a-sms':'Bulk SMSs','a-finances':'Finances','a-summaries':'Summaries','a-statements':'Statements','a-chart-accounts':'Chart of Accounts','a-ai-credit':'AI Credit Check','a-groups':'Groups','a-group-loans':'Group Loans','a-collection-sheets':'Collection Sheets','a-mobile-money':'Mobile Money','a-product-perf':'Product Performance','a-employees':'Employees','a-settings':'System Settings','a-imports':'Imports','a-new-loan':'New Loan','a-record-income':'Record Income','a-emails':'Emails','a-documents':'Documents','a-other-incomes':'Other Incomes','a-investors':'Investors'};
 function aSec(id,el){
   document.querySelectorAll('.asec').forEach(function(s){s.classList.add('hidden')});
   var t=document.getElementById(id);if(t)t.classList.remove('hidden');
@@ -4706,8 +4811,8 @@ function aSec(id,el){
   var tt=document.getElementById('a-title');if(tt)tt.textContent=aTitleMap[id]||'Admin';
 }
 
-function aStep(n){for(var i=1;i<=4;i++){var s=document.getElementById('a-s'+i);if(s)s.classList.add('hidden');var c=document.getElementById('as'+i);if(!c)continue;c.className='sc-circle';if(i<n){c.classList.add('done');c.textContent='\u2713'}else if(i===n){c.classList.add('active');c.textContent=i}else c.textContent=i}for(var j=1;j<=3;j++){var l=document.getElementById('al'+j);if(l)l.classNam</noscript>
-<noscript id="c1">e='sline'+(j<n?' done':'')}var tg=document.getElementById('a-s'+n);if(tg)tg.classList.remove('hidden')}
+function aStep(n){for(var i=1;i<=4;i++){var s=document.getElementById('a-s'+i);if(s)s.classList.add('hidden');var c=document.getElementById('as'+i);if(!c)continue;c.className='sc-circle';if(i<n){c.classList.add('done');c.textContent='\u2713'}else if(i===n){c.classList.add('active');c.textContent=i}else c.textContent=i}for(var j</noscript>
+<noscript id="c1">=1;j<=3;j++){var l=document.getElementById('al'+j);if(l)l.className='sline'+(j<n?' done':'')}var tg=document.getElementById('a-s'+n);if(tg)tg.classList.remove('hidden')}
 function submitApp(){toast('Application submitted!','success');setTimeout(function(){uSec('u-overview')},1200);aStep(1)}
 function simUpload(){toast('File uploaded!','success')}
 
@@ -4805,9 +4910,9 @@ function buildProductPerformance(){
     +'<table style="width:100%;border-collapse:collapse;font-size:13px">'
     +'<thead><tr style="background:var(--sur2)">'
     +'<th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Product</th>'
-    +'<th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Loans</th>'
-    +'<th style="text-align:right;pa</noscript>
-<noscript id="c2">dding:10px 16px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Active</th>'
+    +'<th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:700;color:var(--t3);text-tra</noscript>
+<noscript id="c2">nsform:uppercase">Loans</th>'
+    +'<th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Active</th>'
     +'<th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Settled</th>'
     +'<th style="text-align:right;padding:10px 16px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Total Disbursed</th>'
     +'<th style="text-align:left;padding:10px 16px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase">Portfolio Share</th>'
@@ -5300,6 +5405,393 @@ function approveLoanFromCC(){
 }
 
 
+
+
+// ══════════════════════════════════════════════════════════════════
+// SAVINGS MODULE
+// ══════════════════════════════════════════════════════════════════
+
+var SAVINGS_ACCOUNTS = [
+  { id:'SA-001', member:'John Muwanga', acct:'SV-2026-001', status:'active',
+    transactions:[
+      { date:'2026-01-05', p:'P001', particulars:'Opening deposit', deposit:500000, withdrawal:0 },
+      { date:'2026-01-15', p:'P002', particulars:'Monthly savings', deposit:200000, withdrawal:0 },
+      { date:'2026-02-05', p:'P003', particulars:'Monthly savings', deposit:200000, withdrawal:0 },
+      { date:'2026-02-20', p:'P004', particulars:'Emergency withdrawal', deposit:0, withdrawal:150000 },
+      { date:'2026-03-05', p:'P005', particulars:'Monthly savings', deposit:200000, withdrawal:0 },
+      { date:'2026-03-22', p:'P006', particulars:'Monthly savings', deposit:200000, withdrawal:0 },
+    ]
+  },
+  { id:'SA-002', member:'Grace Nakimuli', acct:'SV-2026-002', status:'active',
+    transactions:[
+      { date:'2026-01-10', p:'P001', particulars:'Opening deposit', deposit:1000000, withdrawal:0 },
+      { date:'2026-01-25', p:'P002', particulars:'Monthly savings', deposit:500000, withdrawal:0 },
+      { date:'2026-02-10', p:'P003', particulars:'Monthly savings', deposit:500000, withdrawal:0 },
+      { date:'2026-02-28', p:'P004', particulars:'School fees withdrawal', deposit:0, withdrawal:800000 },
+      { date:'2026-03-10', p:'P005', particulars:'Monthly savings', deposit:500000, withdrawal:0 },
+    ]
+  },
+  { id:'SA-003', member:'Kisitu Vicent', acct:'SV-2026-003', status:'active',
+    transactions:[
+      { date:'2026-01-08', p:'P001', particulars:'Opening deposit', deposit:300000, withdrawal:0 },
+      { date:'2026-02-08', p:'P002', particulars:'Monthly savings', deposit:150000, withdrawal:0 },
+      { date:'2026-03-08', p:'P003', particulars:'Monthly savings', deposit:150000, withdrawal:0 },
+    ]
+  },
+  { id:'SA-004', member:'David Ouma', acct:'SV-2026-004', status:'dormant',
+    transactions:[
+      { date:'2025-10-01', p:'P001', particulars:'Opening deposit', deposit:200000, withdrawal:0 },
+      { date:'2025-11-01', p:'P002', particulars:'Monthly savings', deposit:100000, withdrawal:0 },
+    ]
+  },
+  { id:'SA-005', member:'Fatuma Nabukeera', acct:'SV-2026-005', status:'active',
+    transactions:[
+      { date:'2026-01-12', p:'P001', particulars:'Opening deposit', deposit:750000, withdrawal:0 },
+      { date:'2026-01-30', p:'P002', particulars:'Monthly savings', deposit:300000, withdrawal:0 },
+      { date:'2026-02-12', p:'P003', particulars:'Monthly savings', deposit:300000, withdrawal:0 },
+      { date:'2026-03-12', p:'P004', particulars:'</noscript>
+<noscript id="c3">Monthly savings', deposit:300000, withdrawal:0 },
+      { date:'2026-04-05', p:'P005', particulars:'Partial withdrawal', deposit:0, withdrawal:500000 },
+    ]
+  },
+];
+
+function buildSavings(){
+  var f2=function(n){return 'UGX '+new Intl.NumberFormat('en-UG').format(n);};
+  var totalPool=0, totalDep=0, totalWith=0, activeCount=0;
+  var now=new Date(), thisMonth=now.getMonth(), thisYear=now.getFullYear();
+
+  SAVINGS_ACCOUNTS.forEach(function(a){
+    var bal=0, dep=0, with_=0, monthDep=0, monthWith=0;
+    a.transactions.forEach(function(t){
+      bal += t.deposit - t.withdrawal;
+      dep += t.deposit;
+      with_ += t.withdrawal;
+      var d=new Date(t.date);
+      if(d.getMonth()===thisMonth && d.getFullYear()===thisYear){
+        monthDep += t.deposit;
+        monthWith += t.withdrawal;
+      }
+    });
+    a._balance = bal;
+    a._dep = dep;
+    a._with = with_;
+    totalPool += bal;
+    totalDep += monthDep;
+    totalWith += monthWith;
+    if(a.status==='active') activeCount++;
+  });
+
+  // Summary cards
+  var el=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
+  el('sv-total', f2(totalPool));
+  el('sv-deposits', f2(totalDep));
+  el('sv-withdrawals', f2(totalWith));
+  el('sv-count', activeCount);
+
+  // Accounts table
+  var tbody=document.getElementById('sv-accounts-tbody');
+  if(!tbody) return;
+  tbody.innerHTML=SAVINGS_ACCOUNTS.map(function(a){
+    var sc=a.status==='active'?'background:#f0fdf4;color:#16a34a':'background:#fef3c7;color:#d97706';
+    return '<tr style="border-bottom:1px solid var(--bdr)">'
+      +'<td style="padding:11px 16px;font-weight:700">'+a.member+'</td>'
+      +'<td style="padding:11px 16px;font-family:monospace;font-size:12px;color:var(--t2)">'+a.acct+'</td>'
+      +'<td style="padding:11px 16px;text-align:right;font-weight:700;color:var(--grn)">'+f2(a._dep)+'</td>'
+      +'<td style="padding:11px 16px;text-align:right;font-weight:700;color:var(--red)">'+f2(a._with)+'</td>'
+      +'<td style="padding:11px 16px;text-align:right;font-weight:800;color:var(--p)">'+f2(a._balance)+'</td>'
+      +'<td style="padding:11px 16px;color:var(--t2);font-size:12px">'+(a.transactions.length>0?a.transactions[a.transactions.length-1].date:'—')+'</td>'
+      +'<td style="padding:11px 16px"><span style="border-radius:5px;padding:2px 10px;font-size:11px;font-weight:700;'+sc+'">'+a.status.charAt(0).toUpperCase()+a.status.slice(1)+'</span></td>'
+      +'<td style="padding:11px 16px;display:flex;gap:6px">'
+      +'<button onclick="viewPassbook(&quot;'+a.id+'&quot;)" style="background:var(--p2);border:none;color:var(--p);border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">Passbook</button>'
+      +'<button onclick="showSavingsDeposit(&quot;'+a.member+'&quot;)" style="background:#f0fdf4;border:none;color:#16a34a;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer">+ Deposit</button>'
+      +'<button onclick="showSavingsWithdraw(&quot;'+a.member+'&quot;)" style="background:#fef2f2;border:none;color:#dc2626;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer">- Withdraw</button>'
+      +'</td>'
+      +'</tr>';
+  }).join('');
+}
+
+function viewPassbook(id){
+  var a=SAVINGS_ACCOUNTS.find(function(x){return x.id===id;});
+  if(!a) return;
+  var f2=function(n){return 'UGX '+new Intl.NumberFormat('en-UG').format(n);};
+
+  document.getElementById('sv-passbook-name').textContent=a.member+' — Savings Passbook';
+  document.getElementById('sv-passbook-acct').textContent='Account: '+a.acct+' | Status: '+a.status.toUpperCase();
+  document.getElementById('sv-passbook-card').style.display='block';
+
+  // Build running balance passbook
+  var runBal=0, totalDep=0, totalWith=0;
+  var rows=a.transactions.map(function(t,i){
+    runBal += t.deposit - t.withdrawal;
+    totalDep += t.deposit;
+    totalWith += t.withdrawal;
+    var depCell = t.deposit>0
+      ? '<td style="padding:10px 16px;text-align:right;font-weight:700;color:#16a34a;border:1px solid var(--bdr)">'+f2(t.deposit)+'</td>'
+      : '<td style="padding:10px 16px;text-align:right;color:var(--t3);border:1px solid var(--bdr)">—</td>';
+    var withCell = t.withdrawal>0
+      ? '<td style="padding:10px 16px;text-align:right;font-weight:700;color:#dc2626;border:1px solid var(--bdr)">'+f2(t.withdrawal)+'</td>'
+      : '<td style="padding:10px 16px;text-align:right;color:var(--t3);border:1px solid var(--bdr)">—</td>';
+    return '<tr style="background:'+(i%2===0?'#fff':'var(--sur2)')+'">'
+      +'<td style="padding:10px 16px;border:1px solid var(--bdr);color:var(--t2)">'+t.date+'</td>'
+      +'<td style="padding:10px 16px;border:1px solid var(--bdr);font-family:monospace;font-size:12px;color:var(--blue)">'+t.p+'</td>'
+      +'<td style="padding:10px 16px;border:1px solid var(--bdr)">'+t.particulars+'</td>'
+      +depCell
+      +withCell
+      +'<td style="padding:10px 16px;text-align:right;font-weight:800;color:var(--p);border:1px solid var(--bdr)">'+f2(runBal)+'</td>'
+      +'<td style="padding:10px 16px;border:1px solid var(--bdr);min-width:80px;color:var(--t3);font-size:11px;font-style:italic">___________</td>'
+      +'</tr>';
+  });
+
+  // Add empty rows for future entries (like physical passbook)
+  for(var i=0;i<5;i++){
+    rows.push('<tr style="height:40px">'
+      +'<td style="border:1px solid var(--bdr)"></td>'
+      +'<td style="border:1px solid var(--bdr)"></td>'
+      +'<td style="border:1px solid var(--bdr)"></td>'
+      +'<td style="border:1px solid var(--bdr)"></td>'
+      +'<td style="border:1px solid var(--bdr)"></td>'
+      +'<td style="border:1px solid var(--bdr)"></td>'
+      +'<td style="border:1px solid var(--bdr)"></td>'
+      +'</tr>');
+  }
+
+  document.getElementById('sv-passbook-tbody').innerHTML=rows.join('');
+  document.getElementById('sv-pb-balance').textContent=f2(runBal);
+  document.getElementById('sv-pb-saved').textContent=f2(totalDep);
+  document.getElementById('sv-pb-withdrawn').textContent=f2(totalWith);
+  document.getElementById('sv-pb-count').textContent=a.transactions.length+' entries';
+
+  // Scroll to passbook
+  document.getElementById('sv-passbook-card').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function savingsFilter(filter, el){
+  document.querySelectorAll('#a-savings .btn').forEach(function(b){
+    b.style.background=''; b.style.color='';
+  });
+  if(el){el.style.background='var(--p)';el.style.color='#fff';}
+  var tbody=document.getElementById('sv-accounts-tbody');
+  if(!tbody) return;
+  var rows=tbody.querySelectorAll('tr');
+  rows.forEach(function(r){
+    if(filter==='all'){r.style.display='';}
+    else{
+      var statusCell=r.querySelector('td:nth-child(7)');
+      if(statusCell){
+        var status=statusCell.textContent.trim().toLowerCase();
+        r.style.display=(status===filter)?'':'none';
+      }
+    }
+  });
+}
+
+function savingsSearch(q){
+  var tbody=document.getElementById('sv-accounts-tbody');
+  if(!tbody) return;
+  var rows=tbody.querySelectorAll('tr');
+  rows.forEach(function(r){
+    var name=r.querySelector('td:nth-child(1)');
+    r.style.display=(!q||!name||(name.textContent.toLowerCase().indexOf(q.toLowerCase())!==-1))?'':'none';
+  });
+}
+
+function showAddSavingsMember(){
+  document.getElementById('m-title').textContent = 'Add New Savings Member';
+  document.getElementById('m-body').innerHTML =
+    '<div style="display:flex;flex-direction:column;gap:14px">'
+
+    // Step indicator
+    +'<div style="background:var(--p2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--p);font-weight:600">'
+    +'Opening a new savings account creates a passbook for this member immediately.'
+    +'</div>'
+
+    // Member name
+    +'<div><label class="flabel">Full Name *</label>'
+    +'<select class="finput" id="sv-new-member-sel" onchange="svFillPhone(this.value)">'
+    +'<option value="">— Select existing client or type new —</option>'
+    +CLIENTS.map(function(c){
+      return '<option value="'+c.name+'">'+c.name+'</option>';
+    }).join('')
+    +'</select></div>'
+
+    +'<div><label class="flabel">Or enter a new name</label>'
+    +'<input class="finput" id="sv-new-name" placeholder="e.g. Sarah Nakato"/></div>'
+
+    // Account type
+    +'<div><label class="flabel">Savings Account Type *</label>'
+    +'<select class="finput" id="sv-new-type">'
+    +'<option value="Individual">Individual Savings</option>'
+    +'<option value="Group">Group / VSLA Savings</option>'
+    +'<option value="Fixed">Fixed Deposit</option>'
+    +'<option value="Target">Target Savings</option>'
+    +'</select></div>'
+
+    // Opening deposit
+    +'<div><label class="flabel">Opening Deposit Amount (UGX) *</label>'
+    +'<input class="finput" type="number" id="sv-new-opening" placeholder="Minimum e.g. 10,000"/></div>'
+
+    // Date
+    +'<div><label class="flabel">Account Opening Date *</label>'
+    +'<input class="finput" type="date" id="sv-new-date" value="'
+    +new Date().toISOString().split('T')[0]+'"/></div>'
+
+    // Phone
+    +'<div><label class="flabel">Phone Number</label>'
+    +'<input class="finput" id="sv-new-phone" placeholder="+256 7XX XXX XXX"/></div>'
+
+    +'</div>';
+
+  // Footer buttons
+  var mf = document.getElementById('m-foot');
+  mf.innerHTML = '';
+  var c = document.createElement('button');
+  c.textContent = 'Cancel';
+  c.setAttribute('style','background:none;border:none;font-size:14px;font-weight:600;color:var(--t2);cursor:pointer;padding:10px 16px');
+  c.onclick = closeM;
+  var b = document.createElement('button');
+  b.textContent = 'Open Savings Account';
+  b.setAttribute('style','background:var(--p);border:none;color:#fff;font-size:14px;font-weight:800;cursor:pointer;padding:11px 24px;border-radius:8px');
+  b.onclick = saveNewSavingsMember;
+  mf.appendChild(c);
+  mf.appendChild(b);
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function svFillPhone(name){
+  var c = CLIENTS.find(function(x){ return x.name === name; });
+  var ph = document.getElementById('sv-new-phone');
+  if(c && ph) ph.value = c.phone || '';
+  var nameInput = document.getElementById('sv-new-name');
+  if(nameInput) nameInput.value = name;
+}
+
+function saveNewSavingsMember(){
+  // Get values
+  var selName  = document.getElementById('sv-new-member-sel').value;
+  var typedName= document.getElementById('sv-new-name').value.trim();
+  var name     = typedName || selName;
+  var acctType = document.getElementById('sv-new-type').value;
+  var opening  = parseFloat(document.getElementById('sv-new-opening').value) || 0;
+  var date     = document.getElementById('sv-new-date').value;
+
+  // Validate
+  if(!name){ toast('Please enter or select a member name','error'); return; }
+  if(opening <= 0){ toast('Please enter an opening deposit amount','error'); return; }
+  if(!date){ toast('Please select an account opening date','error'); return; }
+
+  // Check duplicate
+  var exists = SAVINGS_ACCOUNTS.find(function(a){ return a.member === name; });
+  if(exists){
+    toast(name + ' already has a savings account: ' + exists.acct, 'error');
+    return;
+  }
+
+  // Generate account number
+  var year  = new Date(date).getFullYear();
+  var seqNo = String(SAVINGS_ACCOUNTS.length + 1).padStart(3,'0');
+  var acctNo = 'SV-' + year + '-' + seqNo;
+
+  // Create account
+  var newAccount = {
+    id:   'SA-' + String(SAVINGS_ACCOUNTS.length + 1).padStart(3,'0'),
+    member: name,
+    acct: acctNo,
+    type: acctType,
+    status: 'active',
+    transactions: [
+      {
+        date: date,
+        p: 'P001',
+        particulars: 'Opening deposit',
+        deposit: opening,
+        withdrawal: 0
+      }
+    ]
+  };
+
+  SAVINGS_ACCOUNTS.push(newAccount);
+  closeM();
+  buildSavings();
+
+  var f2 = function(n){ return 'UGX ' + new Intl.NumberFormat('en-UG').format(n); };
+  toast(
+    'Savings account ' + acctNo + ' opened for ' + name +
+    ' with opening deposit of ' + f2(opening),
+    'success'
+  );
+
+  // Auto-open their passbook
+  setTimeout(function(){ viewPassbook(newAccount.id); }, 400);
+}
+
+
+function showSavingsDeposit(memberName){
+  document.getElementById('m-title').textContent='Record Savings Transaction';
+  document.getElementById('m-body').innerHTML=
+    '<div style="display:flex;flex-direction:column;gap:14px">'
+    +'<div><label class="flabel">Member</label>'
+    +'<select class="finput" id="sv-modal-member">'
+    +SAVINGS_ACCOUNTS.map(function(a){
+      return '<option value="'+a.id+'"'+(a.member===memberName?' selected':'')+'>'+a.member+' — '+a.acct+'</option>';
+    }).join('')
+    +'</select></div>'
+    +'<div><label class="flabel">Transaction Type</label>'
+    +'<select class="finput" id="sv-modal-type">'
+    +'<option value="deposit">Deposit (Savings)</option>'
+    +'<option value="withdrawal">Withdrawal</option>'
+    +'</select></div>'
+    +'<div><label class="flabel">Amount (UGX)</label>'
+    +'<input class="finput" type="number" id="sv-modal-amount" placeholder="e.g. 200000"/></div>'
+    +'<div><label class="flabel">Particulars / Description</label>'
+    +'<input class="finput" id="sv-modal-particulars" placeholder="e.g. Monthly savings, School fees withdrawal..."/></div>'
+    +'<div><label class="flabel">Date</label>'
+    +'<input class="finput" type="date" id="sv-modal-date" value="'+new Date().toISOString().split('T')[0]+'"/></div>'
+    +'</div>';
+  document.getElementById('m-foot').innerHTML='';
+  var mf=document.getElementById('m-foot');
+  var c=document.createElement('button');
+  c.textContent='Cancel';
+  c.setAttribute('style','background:none;border:none;font-size:14px;font-weight:600;color:var(--t2);cursor:pointer;padding:10px 16px');
+  c.onclick=closeM;
+  var b=document.createElement('button');
+  b.textContent='Save Transaction';
+  b.setAttribute('style','background:var(--p);border:none;color:#fff;font-size:14px;font-weight:800;cursor:pointer;padding:10px 24px;border-radius:8px');
+  b.onclick=saveSavingsTransaction;
+  mf.appendChild(c); mf.appendChild(b);
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function showSavingsWithdraw(memberName){
+  showSavingsDeposit(memberName);
+  setTimeout(function(){
+    var sel=document.getElementById('sv-modal-type');
+    if(sel) sel.value='withdrawal';
+  },100);
+}
+
+function saveSavingsTransaction(){
+  var accId=document.getElementById('sv-modal-member').value;
+  var type=document.getElementById('sv-modal-type').value;
+  var amount=parseFloat(document.getElementById('sv-modal-amount').value)||0;
+  var particulars=document.getElementById('sv-modal-particulars').value||type;
+  var date=document.getElementById('sv-modal-date').value;
+  if(!amount){toast('Please enter an amount','error');return;}
+  var acc=SAVINGS_ACCOUNTS.find(function(a){return a.id===accId;});
+  if(!acc){toast('Account not found','error');return;}
+  var pNum='P'+(String(acc.transactions.length+1).padStart(3,'0'));
+  acc.transactions.push({
+    date:date, p:pNum, particulars:particulars,
+    deposit:type==='deposit'?amount:0,
+    withdrawal:type==='withdrawal'?amount:0
+  });
+  closeM();
+  buildSavings();
+  toast((type==='deposit'?'Deposit':'Withdrawal')+' of UGX '+new Intl.NumberFormat('en-UG').format(amount)+' recorded for '+acc.member,'success');
+  viewPassbook(accId);
+}
+
+
 window.addEventListener('load',function(){
   buildRepayments();
   buildNotifs();
@@ -5380,8 +5872,7 @@ function buildRolesTable() {
     ['Send Bulk SMS', true, false, true, false, false],
     ['Manage Staff', true, false, false, false, false],
     ['Company Settings', true, false, false, false, false],
-    ['Billing & Subscr</noscript>
-<noscript id="c3">iption', true, false, false, false, false],
+    ['Billing & Subscription', true, false, false, false, false],
   ];
   tb.innerHTML = perms.map(function(row) {
     var cells = '<td style="padding:10px 14px;font-size:13px;font-weight:600">' + row[0] + '</td>';
@@ -5572,7 +6063,8 @@ function viewCompanyDetail(companyId) {
     + '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">'
     + saMetric('Clients', new Intl.NumberFormat('en').format(c.clients), '#2563EB')
     + saMetric('Loans', new Intl.NumberFormat('en').format(c.totalLoans), '#0B6E4F')
-    + saMetric('Portfolio', '$'+new Intl.NumberFormat('en').format(Math.round(c.portfolio/1000000))+'M', '#F59E0B')
+    + saMetric('Portfolio', '$'+new Intl.NumberFormat('en').format(Math.round</noscript>
+<noscript id="c4">(c.portfolio/1000000))+'M', '#F59E0B')
     + saMetric('Plan', plan.name, plan.color)
     + '</div>';
   document.getElementById('m-foot').innerHTML =
@@ -5737,7 +6229,7 @@ function saSelectPlan(plan, el) {
 }
 </noscript>
 <script>
-(function(){var p=[];for(var i=0;i<4;i++){var el=document.getElementById("c"+i);if(el)p.push(el.textContent||el.innerText);}var s=document.createElement("script");s.text=p.join("");document.head.appendChild(s);})();
+(function(){var p=[];for(var i=0;i<5;i++){var el=document.getElementById("c"+i);if(el)p.push(el.textContent||el.innerText);}var s=document.createElement("script");s.text=p.join("");document.head.appendChild(s);})();
 </script>
 </body>
 </html>
